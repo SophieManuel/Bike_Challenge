@@ -12,5 +12,5 @@ For this part, you will use the data from http://data.montpellier3m.fr/dataset/c
 
 Here is the visualization I made :
 
-![Bike's traffic in Montpellier](mapfix.png)
+![Bike's traffic in Montpellier](https://github.com/SophieManuel/Bike_Challenge/blob/main/Visualisation/mapfix.png)
 
