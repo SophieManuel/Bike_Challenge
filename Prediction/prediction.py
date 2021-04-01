@@ -11,7 +11,7 @@ from download import download
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy import stats as st
+from scipy import stats as stat
 import matplotlib.pyplot as plt
 import datetime as dt
 
@@ -60,50 +60,28 @@ plt.title("Nombre de vélos par jour entre minuit et 9h depuis 1 an")
 
 #%%
 #Linear regression per day
-bic_0_9_d.reset_index(drop = True,inplace=True)
-fit = st.linregress(bic_0_9_d.index, bic_0_9_d['Total de la journée'])
+bic_0_9_d.reset_index(drop = True,inplace=True) #to be sure
+fit = stat.linregress(bic_0_9_d.index, bic_0_9_d['Total de la journée'])
 print(fit)
-
-#%%
-#"Date" is in index
-#bic_0_9_d = bic_0_9_d.set_index(bic_0_9_d["Date"])
+linreg = fit.intercept + fit.slope * bic_0_9_d.index
+print(f"R-squared: {fit.rvalue**2*100:.5f}%")
 
 #%%
 #Plot line's regression
-plt.scatter(bic_0_9_d.index, bic_0_9_d['Total de la journée'])
-plt.plot(bic_0_9_d.index, fit.intercept + fit.slope * bic_0_9_d.index,"red")
-plt.xlabel("Indice")
+fig = plt.figure()
+axes = fig.add_subplot(111)
+plt.xticks(np.arange(min(bic_0_9_d.index), max(bic_0_9_d.index)+1, 26.14))
+axes.scatter(bic_0_9_d.index, bic_0_9_d["Total de la journée"], label = "Nombre de vélos")
+ 
+axes.plot(bic_0_9_d.index, linreg, "r", label = "Droite de régression")
+plt.legend()
+axes.xaxis.set_ticklabels(['2020-03', '2020-05', '2020-07', '2020-09', '2020-11', '2021-01', '2021-03'])
+plt.xlabel("Date")
 plt.ylabel("Nombre de vélos")
 plt.title("Nombre de vélos par jour entre minuit et 9h depuis 1 an")
+plt.savefig("Graph regression lineaire.pdf")
 
 # %%
 #Prediction of 2nd April
 pred = fit.intercept + fit.slope * 182
 print(f"Le nombre de vélos passant le 2 avril serait de : {pred:1.{0}f} entre minuit et 9h.")
-
-#mettre na pour les jours manquants
-#%%
-#Index becomes column
-bic_0_9_d['Date'] = bic_0_9_d.index
-
-bic_0_9_d = bic_0_9_d.rename(columns={'Date':'Jour'})
-
-bic_0_9_d['Jour'] = pd.to_datetime(bic_0_9_d['Jour'])
-
-bic_0_9_d
-bic_0_9_d['Date'] = bic_0_9_d.index
-#Converting format
-bic_0_9_d.index = pd.to_datetime(bic_0_9_d["Date"])
-# %%
-#Adding missing dates
-alldays = pd.date_range(bic_0_9_d.index.min(), bic_0_9_d.index.max(), freq='D')
-
-bic_0_9_d = bic_0_9_d.reindex(alldays)
-
-bic_0_9_d['Date'] = bic_0_9_d.index
-
-bic_0_9_d
-
-#%%
-#Reset index
-bic_0_9_d.reset_index(drop = True,inplace=True)
